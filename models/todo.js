@@ -27,6 +27,17 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
+    setCompletionStatus(boolVal) {
+      return this.update({ completed: boolVal });
+    }
+
+    static async completedItems() {
+      return this.findAll({
+        where: { completed: true },
+        order: [["id", "ASC"]],
+      });
+    }
+
     static async overDue() {
       return this.findAll({
         where: {
@@ -55,10 +66,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         order: [["id", "ASC"]],
       });
-    }
-
-    markAsCompleted() {
-      return this.update({ completed: true });
     }
   }
   Todo.init(
