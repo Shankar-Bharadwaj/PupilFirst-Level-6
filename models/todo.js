@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
       return this.findAll();
     }
 
+    static async remove(id) {
+      return this.destroy({
+        where: { id },
+      });
+    }
+
     static async overDue() {
       return this.findAll({
         where: {
