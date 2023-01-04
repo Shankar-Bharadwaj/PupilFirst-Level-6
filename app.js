@@ -9,13 +9,23 @@ app.set("view engine", "ejs");
 
 app.get("/", async function (request, response) {
   const allTodos = await Todo.getTodos();
+  const overDue = await Todo.overdue();
+  const dueLater = await Todo.dueLater();
+  const dueToday = await Todo.dueToday();
   if (request.accepts("html")) { // if the request is from a browser
     response.render('index', {
-      allTodos
+      title: "Todo's Manager",
+      allTodos,
+      overDue,
+      dueToday,
+      dueLater,
     })
   } else { // request from postman/api which just requires json
     response.json({
-      allTodos
+      allTodos,
+      overDue,
+      dueToday,
+      dueLater,
     })
   }
   response.render('index');
