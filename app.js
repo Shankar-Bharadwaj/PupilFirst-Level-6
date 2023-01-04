@@ -1,10 +1,14 @@
 const express = require("express");
 const app = express();
+var csrf = require("csurf");
 const { Todo } = require("./models");
 const bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 app.use(bodyParser.json());
 const path = require("path");
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser("shhh! It's a secret string!!!"));
+app.use(csrf({ cookie: true }));
 
 app.set("view engine", "ejs");
 
@@ -21,6 +25,7 @@ app.get("/", async function (request, response) {
       overDue,
       dueToday,
       dueLater,
+      csrfToken: request.csrfToken(),
     });
   } else {
     // request from postman/api which just requires json
