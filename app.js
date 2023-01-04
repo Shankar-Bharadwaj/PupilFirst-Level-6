@@ -4,35 +4,38 @@ const { Todo } = require("./models");
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 const path = require("path");
+app.use(express.urlencoded({ extended: false }));
 
 app.set("view engine", "ejs");
 
 app.get("/", async function (request, response) {
   const allTodos = await Todo.getTodos();
-  const overDue = await Todo.overdue();
+  const overDue = await Todo.overDue();
   const dueLater = await Todo.dueLater();
   const dueToday = await Todo.dueToday();
-  if (request.accepts("html")) { // if the request is from a browser
-    response.render('index', {
+  if (request.accepts("html")) {
+    // if the request is from a browser
+    response.render("index", {
       title: "Todo's Manager",
       allTodos,
       overDue,
       dueToday,
       dueLater,
-    })
-  } else { // request from postman/api which just requires json
+    });
+  } else {
+    // request from postman/api which just requires json
     response.json({
       allTodos,
       overDue,
       dueToday,
       dueLater,
-    })
+    });
   }
-  response.render('index');
+  response.render("index");
 });
 
 // eslint-disable-next-line no-undef
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
@@ -61,8 +64,11 @@ app.get("/todos/:id", async function (request, response) {
 
 app.post("/todos", async function (request, response) {
   try {
-    const todo = await Todo.addTodo(request.body);
-    return response.json(todo);
+    await Todo.addTodo({
+      title: request.body.title,
+      dueDate: request.body.dueDate,
+    });
+    return response.redirect("/");
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
